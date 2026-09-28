@@ -504,6 +504,14 @@ h1 {
 .modal {
   font-size: 14px;
 }
+#user-modal {
+  --bs-modal-width: 640px;
+  --bs-modal-padding: 24px;
+  --bs-modal-header-padding: 20px 24px;
+}
+#user-modal .modal-footer {
+  padding: 16px 24px;
+}
 .modal-content {
   border: 0;
   box-shadow: 0 12px 55px #163b462e;
@@ -627,6 +635,13 @@ h1 {
   }
 }
 @media (max-width: 575.98px) {
+  #user-modal {
+    --bs-modal-padding: 20px;
+    --bs-modal-header-padding: 18px 20px;
+  }
+  #user-modal .modal-footer {
+    padding: 14px 20px;
+  }
   .topbar {
     margin: 0 8px;
     padding: 14px 8px;

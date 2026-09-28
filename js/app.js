@@ -285,7 +285,7 @@
   };
   const form = byId("user-form");
   const userFields = [...form.querySelectorAll("[required]")];
-  const touchedFields = new Set();
+  let hasSubmittedUserForm = false;
   userFields.forEach((field) => {
     const feedback = document.createElement("div");
     feedback.id = `${field.id}-error`;
@@ -303,7 +303,6 @@
   const moduleModal = new bootstrap.Modal(byId("module-modal"));
   let notificationTimer;
   let returnFocus;
-  let userModalReady = false;
 
   function getFilteredUsers() {
     const query = controls.search.value.trim().toLowerCase();
@@ -472,11 +471,10 @@
   }
 
   function openUserModal(user = null) {
-    userModalReady = false;
     returnFocus = document.activeElement;
     state.editingId = user?.id ?? null;
     form.reset();
-    touchedFields.clear();
+    hasSubmittedUserForm = false;
     byId("validation-summary").hidden = true;
     userFields.forEach((field) => showFieldError(field, ""));
     if (user) {
@@ -568,9 +566,9 @@
   }
 
   function validateForm() {
+    hasSubmittedUserForm = true;
     userFields.forEach((field) => {
       field.value = field.value.trim();
-      touchedFields.add(field);
       validateField(field);
     });
     updateValidationSummary();
@@ -690,27 +688,15 @@
     confirmModal.hide();
   });
   form.addEventListener("submit", saveUser);
-  form.addEventListener("focusout", (event) => {
-    // Opening/closing a dialog can blur the previous field without user input.
-    if (
-      !userModalReady ||
-      !byId("user-modal").classList.contains("show") ||
-      !userFields.includes(event.target)
-    )
-      return;
-    touchedFields.add(event.target);
-    validateField(event.target);
-  });
   for (const eventName of ["input", "change"]) {
     form.addEventListener(eventName, (event) => {
-      if (!touchedFields.has(event.target)) return;
+      if (!hasSubmittedUserForm || !userFields.includes(event.target)) return;
       validateField(event.target);
-      if (!byId("validation-summary").hidden) updateValidationSummary();
+      updateValidationSummary();
     });
   }
   byId("user-modal").addEventListener("shown.bs.modal", () => {
     byId("first-name").focus();
-    userModalReady = true;
   });
   byId("user-modal").addEventListener("hidden.bs.modal", restoreFocus);
   byId("confirm-modal").addEventListener("hidden.bs.modal", () => {

@@ -65,7 +65,7 @@ Add and Edit share a form and validation path. IDs and submitted dates are gener
 
 Disabled rows include a text status, long values expose their full content on hover, duplicate email addresses are rejected, and no-results feedback suggests a next step. Destructive-looking disable actions require confirmation. Search, status, and filters remain intact after edits.
 
-Form controls use a single subtle focus ring, filters have more separation, and table headings use a lighter weight. Add/Edit errors appear beside the relevant field after leaving it or attempting to save, then update while correcting it. Failed saves show an accessible summary and focus the first invalid field. Opening another form clears previous errors.
+Form controls use a single subtle focus ring, filters have more separation, and table headings use a lighter weight. The Add/Edit dialog is wider with more padding and space between fields. Validation messages first appear only after clicking the form's Add User or Save Changes button (or submitting with Enter), then update while correcting inputs. Simply typing or leaving a field does not show errors before that first attempt. Failed saves show an accessible summary and focus the first invalid field. Opening another form resets validation to this initial state.
 
 The email address also serves as the username. Validation checks syntax and uniqueness within the current mock data; it does not verify mailbox ownership or deliverability. Names accept international letters, spaces, apostrophes, hyphens, and periods, up to 50 characters.
 
@@ -86,6 +86,8 @@ JavaScript syntax validation and 38 DOM integration checks passed using the actu
 A subsequent 31-check audit passed after correcting the reference activation dates and reducing table/sidebar spacing. It also verified local dependency files, unique element IDs, all 11 columns, and the first ten records' IDs, first names, and dates against the reference.
 
 The interaction refinement passed 33 DOM checks covering inline errors, international names, malformed and duplicate emails, error reset between modal sessions, valid Add/Edit saves, and search/filter/pagination regressions.
+
+The submit-triggered validation update passed 18 targeted checks: no errors before the first submit, consistent Add/Edit validation, correction feedback, cancellation/reopening, keyboard form submission, duplicate detection, and modal sizing configuration. The sizing check verifies CSS configuration, not a rendered visual comparison.
 
 Visual browser verification at desktop, tablet, and mobile widths remains pending: the available browser tool blocked local-file previews. DOM checks do not verify visual layout or native browser behavior.
 
