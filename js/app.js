@@ -2,277 +2,8 @@
   "use strict";
 
   const PAGE_SIZE = 10;
-  const seedUsers = [
-    [
-      "0513",
-      "John",
-      "Doe",
-      "JohnDoe@Email.com",
-      "Admin",
-      "NY",
-      "Corporate",
-      "2025-05-01",
-    ],
-    [
-      "1681",
-      "Mike",
-      "Harry",
-      "Mikeharry@Email.com",
-      "Admin",
-      "NY",
-      "Corporate",
-      "2025-05-02",
-      "2025-05-05",
-    ],
-    [
-      "0123",
-      "Jess",
-      "Lambert",
-      "JLambert91@Email.com",
-      "Licensed",
-      "NY",
-      "Corporate",
-      "2025-05-01",
-    ],
-    [
-      "8415",
-      "Yor",
-      "Plan",
-      "YorP@Email.com",
-      "Forward",
-      "NY",
-      "Corporate",
-      "2025-05-15",
-    ],
-    [
-      "6512",
-      "Kim",
-      "Jeun",
-      "KimJ99@Email.com",
-      "Recruiter",
-      "NY",
-      "Corporate",
-      "2025-05-15",
-      "2025-05-16",
-    ],
-    [
-      "1874",
-      "Harry",
-      "Styles",
-      "HarrySS@Email.com",
-      "Forward",
-      "NY",
-      "Corporate",
-      "2025-06-01",
-    ],
-    [
-      "6301",
-      "Fulgur",
-      "Metane",
-      "FulgurMet@Email.com",
-      "Forward",
-      "NY",
-      "Corporate",
-      "2025-06-02",
-    ],
-    [
-      "4328",
-      "Sarah",
-      "Chen",
-      "SarahC@Email.com",
-      "Admin",
-      "CA",
-      "West",
-      "2025-06-10",
-    ],
-    [
-      "9987",
-      "David",
-      "Park",
-      "DavidP@Email.com",
-      "Licensed",
-      "CA",
-      "West",
-      "2025-06-12",
-    ],
-    [
-      "7764",
-      "Maria",
-      "Santos",
-      "MariaS@Email.com",
-      "Recruiter",
-      "TX",
-      "South",
-      "2025-06-15",
-    ],
-    [
-      "2046",
-      "Olivia",
-      "Bennett",
-      "OliviaB@Email.com",
-      "Admin",
-      "IL",
-      "Midwest",
-      "2025-06-18",
-    ],
-    [
-      "3157",
-      "Noah",
-      "Williams",
-      "NoahW@Email.com",
-      "Licensed",
-      "NY",
-      "Corporate",
-      "2025-06-20",
-    ],
-    [
-      "4268",
-      "Amelia",
-      "Patel",
-      "AmeliaP@Email.com",
-      "Recruiter",
-      "TX",
-      "South",
-      "2025-06-22",
-    ],
-    [
-      "5379",
-      "Liam",
-      "Garcia",
-      "LiamG@Email.com",
-      "Forward",
-      "CA",
-      "West",
-      "2025-06-25",
-    ],
-    [
-      "6480",
-      "Sophia",
-      "Wilson",
-      "SophiaW@Email.com",
-      "Licensed",
-      "IL",
-      "Midwest",
-      "2025-07-01",
-    ],
-    [
-      "7591",
-      "Ethan",
-      "Nguyen",
-      "EthanN@Email.com",
-      "Recruiter",
-      "CA",
-      "West",
-      "2025-07-03",
-    ],
-    [
-      "8602",
-      "Isabella",
-      "Reed",
-      "IsabellaR@Email.com",
-      "Admin",
-      "NY",
-      "Corporate",
-      "2025-07-05",
-    ],
-    [
-      "9713",
-      "Lucas",
-      "Martin",
-      "LucasM@Email.com",
-      "Forward",
-      "TX",
-      "South",
-      "2025-07-08",
-    ],
-    [
-      "1824",
-      "Mia",
-      "Thompson",
-      "MiaT@Email.com",
-      "Licensed",
-      "IL",
-      "Midwest",
-      "2025-07-10",
-    ],
-    [
-      "2935",
-      "Oliver",
-      "Kim",
-      "OliverK@Email.com",
-      "Recruiter",
-      "CA",
-      "West",
-      "2025-07-12",
-    ],
-    [
-      "3046",
-      "Charlotte",
-      "Davis",
-      "CharlotteD@Email.com",
-      "Admin",
-      "TX",
-      "South",
-      "2025-07-15",
-    ],
-    [
-      "4157",
-      "James",
-      "Anderson",
-      "JamesA@Email.com",
-      "Licensed",
-      "NY",
-      "Corporate",
-      "2025-07-18",
-    ],
-    [
-      "5268",
-      "Ava",
-      "Robinson",
-      "AvaR@Email.com",
-      "Forward",
-      "IL",
-      "Midwest",
-      "2025-07-20",
-    ],
-    [
-      "6379",
-      "Benjamin",
-      "Lee",
-      "BenjaminL@Email.com",
-      "Recruiter",
-      "CA",
-      "West",
-      "2025-07-22",
-    ],
-  ];
-  const users = seedUsers.map(
-    (
-      [
-        id,
-        firstName,
-        lastName,
-        email,
-        group,
-        division,
-        region,
-        submittedDate,
-        enabledDate = submittedDate,
-      ],
-      index,
-    ) => ({
-      id,
-      firstName,
-      lastName,
-      email,
-      group,
-      division,
-      region,
-      submittedDate,
-      userType: index % 4 === 2 ? "External" : "Internal",
-      enabled: ![11, 14, 18, 22].includes(index),
-      enabledDate: [11, 14, 18, 22].includes(index) ? "" : enabledDate,
-    }),
+  const userStore = window.UserManagement.createUserStore(
+    window.UserManagement.mockUsers,
   );
   const state = { page: 1, editingId: null, pendingDisableId: null };
   const byId = (id) => document.getElementById(id);
@@ -306,7 +37,7 @@
 
   function getFilteredUsers() {
     const query = controls.search.value.trim().toLowerCase();
-    return users.filter((user) => {
+    return userStore.list().filter((user) => {
       const fields =
         controls.field.value === "all"
           ? [
@@ -337,11 +68,6 @@
     if (!value) return "—";
     const [year, month, day] = value.split("-");
     return `${month}/${day}/${year}`;
-  }
-
-  function today() {
-    const date = new Date();
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   }
 
   function createAction(user, action, label, icon) {
@@ -454,8 +180,8 @@
     const summary = `Showing ${filtered.length ? start + 1 : 0} to ${Math.min(start + PAGE_SIZE, filtered.length)} of ${filtered.length} entries`;
     byId("results-summary").textContent =
       summary +
-      (filtered.length !== users.length
-        ? ` (filtered from ${users.length})`
+      (filtered.length !== userStore.count()
+        ? ` (filtered from ${userStore.count()})`
         : "");
     renderPagination(totalPages);
   }
@@ -538,11 +264,13 @@
         return "Enter a valid email address, such as name@company.com.";
       }
       if (
-        users.some(
-          (user) =>
-            user.id !== state.editingId &&
-            user.email.toLowerCase() === value.toLowerCase(),
-        )
+        userStore
+          .list()
+          .some(
+            (user) =>
+              user.id !== state.editingId &&
+              user.email.toLowerCase() === value.toLowerCase(),
+          )
       ) {
         return "This email is already used. Enter a different address.";
       }
@@ -582,37 +310,35 @@
   function saveUser(event) {
     event.preventDefault();
     if (!validateForm()) return;
-    const existing = users.find((user) => user.id === state.editingId);
+    const isEdit = state.editingId !== null;
     const values = Object.fromEntries(new FormData(form));
-    const enabled = values.status === "enabled";
+    values.enabled = values.status === "enabled";
     delete values.status;
-    const user = {
-      ...values,
-      enabled,
-      id:
-        existing?.id ??
-        String(Math.max(...users.map((item) => Number(item.id))) + 1).padStart(
-          4,
-          "0",
-        ),
-      submittedDate: existing?.submittedDate ?? today(),
-      enabledDate: enabled ? existing?.enabledDate || today() : "",
-    };
-    if (existing) Object.assign(existing, user);
-    else users.unshift(user);
+    let user;
+    try {
+      user = userStore.save(values, state.editingId);
+    } catch (error) {
+      byId("validation-summary").textContent = error.message;
+      byId("validation-summary").hidden = false;
+      return;
+    }
     const filtered = getFilteredUsers();
     const index = filtered.findIndex((item) => item.id === user.id);
     if (index !== -1) state.page = Math.floor(index / PAGE_SIZE) + 1;
     renderUsers();
     userModal.hide();
     notify(
-      `${user.firstName} ${user.lastName} ${existing ? "updated" : "added"}.${index === -1 ? " This user is hidden by your current search or filters." : ""}`,
+      `${user.firstName} ${user.lastName} ${isEdit ? "updated" : "added"}.${index === -1 ? " This user is hidden by your current search or filters." : ""}`,
     );
   }
 
   function setUserEnabled(user, enabled) {
-    user.enabled = enabled;
-    user.enabledDate = enabled ? today() : "";
+    try {
+      userStore.setEnabled(user.id, enabled);
+    } catch (error) {
+      notify(error.message);
+      return;
+    }
     renderUsers();
     notify(
       `${user.firstName} ${user.lastName} ${enabled ? "enabled" : "disabled"}.`,
@@ -667,7 +393,7 @@
   byId("user-rows").addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");
     if (!button) return;
-    const user = users.find((item) => item.id === button.dataset.id);
+    const user = userStore.get(button.dataset.id);
     if (!user) return;
     if (button.dataset.action === "edit") openUserModal(user);
     else if (user.enabled) {
@@ -683,7 +409,7 @@
     }
   });
   byId("confirm-disable").addEventListener("click", () => {
-    const user = users.find((item) => item.id === state.pendingDisableId);
+    const user = userStore.get(state.pendingDisableId);
     if (user) setUserEnabled(user, false);
     confirmModal.hide();
   });

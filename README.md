@@ -4,6 +4,18 @@
 
 A responsive recreation of the supplied company user-management screen. The layout retains the horizontal navigation, blue management sidebar, mint workspace frame, compact filters, and user table. All user-management interactions run in the browser.
 
+## Screenshots
+
+User-provided screenshots of the running desktop project. These are captured output, not a guarantee of identical spacing at every viewport or after later refinements.
+
+### Edit Users
+
+![Edit Users page with search, filters, user actions, and pagination](assets/screenshots/edit-users.png)
+
+### Add User
+
+![Add User dialog with identity and account fields](assets/screenshots/add-user.png)
+
 ## Features
 
 - 24 realistic mock users across three initial pages, with 10 users per page.
@@ -27,10 +39,23 @@ A responsive recreation of the supplied company user-management screen. The layo
 
 ```text
 user-management/
-├── index.html                  # Semantic layout and reusable Bootstrap modals
+├── index.html                  # Small entry point: assets, scripts, app container
 ├── css/styles.css              # Reference styling and responsive adjustments
-├── js/app.js                   # Mock data, state, rendering, validation, events
+├── js/
+│   ├── views/
+│   │   ├── header.js           # Company navigation and profile
+│   │   ├── sidebar.js          # Management menu and mobile toggle
+│   │   ├── users.js            # Search, filters, table and pagination
+│   │   ├── modals.js           # Add/Edit, disable and module dialogs
+│   │   └── icons.js            # Shared SVG symbols
+│   ├── render-layout.js        # Assembles views before app initialization
+│   ├── mock-users.js            # Starting demo records
+│   ├── user-store.js            # Record operations and metadata rules
+│   └── app.js                   # UI state, rendering, validation, events
+├── docs/HANDOFF.md              # Change guide and backend integration notes
+├── tests/user-store.test.cjs    # Dependency-free data regression tests
 ├── assets/
+│   ├── screenshots/            # User-provided output captures
 │   ├── favicon.svg
 │   └── vendor/                 # Bootstrap assets and MIT license
 └── README.md
@@ -46,7 +71,9 @@ Alternatively, open the directory in VS Code and use Live Server. No package ins
 
 ## Implementation Approach
 
-The application keeps one mutable array of user records and a small state object for the current page and modal targets. Each record has a stable string ID, identity fields, group, division, region, user type, account status, and date-only values.
+`index.html` loads the styles and deferred scripts into one app container. Each `js/views/` file contains the static markup for one section. `render-layout.js` assembles those sections before `app.js` attaches behavior. JavaScript templates preserve direct-file operation without fetching HTML partials or adding a build system.
+
+The user store owns one private array of records and exposes explicit read/save/status operations. The UI keeps only page and modal state; it reads snapshots and routes mutations through the store. Mock records are separated from application logic. Each record has a stable string ID, identity fields, group, division, region, user type, account status, and date-only values.
 
 Rendering follows **users → search → combined filters → page slice → DOM**. Search and filter changes return to page one; mutations clamp the page to the available range. Event delegation on the table and pagination avoids rebuilding event handlers. User-provided text is inserted with `textContent`, never interpreted as HTML.
 
@@ -79,17 +106,21 @@ Desktop preserves the two-column workspace. Below 1200px the top navigation coll
 - Data is stored in memory. Refreshing the browser resets the mock data.
 - Bootstrap is distributed under the MIT license, included in `assets/vendor/LICENSE-bootstrap`.
 
+## Developer Handoff
+
+See [the developer handoff guide](docs/HANDOFF.md) for file responsibilities, the record API, existing workflows, common changes, backend integration steps, and a browser acceptance checklist. The project remains a working front-end application with no build step.
+
 ## Verification
 
-JavaScript syntax validation and 38 DOM integration checks passed using the actual bundled Bootstrap scripts. Checks covered every search field, combined filters, pagination, add/edit, required and duplicate-email validation, safe text rendering, status confirmation and cancellation, hidden saved records, navigation toggles, and runtime errors.
+With Node.js 18 or newer, run the included data tests without installing packages:
 
-A subsequent 31-check audit passed after correcting the reference activation dates and reducing table/sidebar spacing. It also verified local dependency files, unique element IDs, all 11 columns, and the first ten records' IDs, first names, and dates against the reference.
+```sh
+node --test tests/user-store.test.cjs
+```
 
-The interaction refinement passed 33 DOM checks covering inline errors, international names, malformed and duplicate emails, error reset between modal sessions, valid Add/Edit saves, and search/filter/pagination regressions.
+All 11 included tests pass. They cover reference metadata, additions and edits, required inputs, duplicate emails, missing records, status transitions, immutable snapshots, and unique IDs. A 17-check DOM regression run after the view/data split also passed, covering script initialization, search/filter/pagination, submit-triggered validation, Add/Edit, status changes, modal reset, and screenshot links. Re-run the browser checklist in the handoff guide when changing the UI.
 
-The submit-triggered validation update passed 18 targeted checks: no errors before the first submit, consistent Add/Edit validation, correction feedback, cancellation/reopening, keyboard form submission, duplicate detection, and modal sizing configuration. The sizing check verifies CSS configuration, not a rendered visual comparison.
-
-Visual browser verification at desktop, tablet, and mobile widths remains pending: the available browser tool blocked local-file previews. DOM checks do not verify visual layout or native browser behavior.
+The supplied screenshots document desktop output. Visual browser verification across desktop, tablet, and mobile remains pending; the available browser tool blocked local-file previews. Automated data/DOM checks do not establish visual correctness.
 
 ## Assessment Submission
 
