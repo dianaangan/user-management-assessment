@@ -25,8 +25,14 @@ select {
   touch-action: manipulation;
 }
 :focus-visible {
-  outline: 3px solid #146baf !important;
-  outline-offset: 3px;
+  outline: 2px solid #508eb7;
+  outline-offset: 2px;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: #7daac7;
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(46 132 191 / 12%);
 }
 .icon-library {
   position: absolute;
@@ -304,7 +310,7 @@ h1 {
 .filter-toolbar {
   display: flex;
   gap: 14px;
-  margin: 14px 0 10px;
+  margin: 18px 0 14px;
   align-items: center;
 }
 .filter-toggle {
@@ -333,17 +339,17 @@ h1 {
   display: grid;
   grid-template-columns: 68px 155px 64px 155px;
   align-items: center;
-  gap: 5px 12px;
-  margin-bottom: 18px;
+  gap: 10px 16px;
+  margin-bottom: 26px;
   width: fit-content;
 }
 .filter-grid label {
   font-size: 11px;
 }
 .filter-grid .form-select {
-  min-height: 26px;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  min-height: 30px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   font-size: 11px;
 }
 .table-responsive {
@@ -359,8 +365,9 @@ h1 {
 }
 .users-table th {
   font-size: 11px;
-  font-weight: 600;
-  padding: 10px 6px;
+  font-weight: 500;
+  color: #49545d;
+  padding: 12px 6px;
   border-bottom: 2px solid #e4e7e9;
   white-space: nowrap;
 }
@@ -513,6 +520,27 @@ h1 {
 .form-note {
   color: var(--muted);
   font-size: 12px;
+}
+.validation-summary {
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  color: #923a40;
+  background: #fff5f5;
+  border-left: 3px solid #c86a72;
+  border-radius: 3px;
+}
+.modal .form-control.is-invalid,
+.modal .form-select.is-invalid {
+  border-color: #c86a72;
+  background-image: none;
+}
+.modal .form-control.is-invalid:focus,
+.modal .form-select.is-invalid:focus {
+  box-shadow: 0 0 0 2px rgb(200 106 114 / 12%);
+}
+.invalid-feedback {
+  font-size: 12px;
+  line-height: 1.5;
 }
 .btn-primary {
   background-color: var(--blue);

@@ -325,9 +325,15 @@
               aria-label="Close"
             ></button>
           </div>
-          <form id="user-form">
+          <form id="user-form" novalidate>
             <div class="modal-body">
               <p class="form-note">All fields are required.</p>
+              <p
+                id="validation-summary"
+                class="validation-summary"
+                role="alert"
+                hidden
+              ></p>
               <div class="row g-3">
                 <div class="col-sm-6">
                   <label class="form-label" for="first-name">First name</label
@@ -361,9 +367,11 @@
                     required
                     maxlength="254"
                     autocomplete="email"
+                    aria-describedby="email-help"
                   />
-                  <div class="form-text">
-                    Each user must have a unique email address.
+                  <div id="email-help" class="form-text">
+                    The email address is the username. Use a unique address,
+                    such as name@company.com.
                   </div>
                 </div>
                 <div class="col-sm-6">

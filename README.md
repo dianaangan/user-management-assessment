@@ -10,7 +10,7 @@ A responsive recreation of the supplied company user-management screen. The layo
 - Case-insensitive search across relevant fields or a selected field.
 - Combined status, division, and region filters. Clear Filters resets search and all filters.
 - Pagination based on the current result set, with an explicit no-results state.
-- One Bootstrap modal for adding and editing users, required-field validation, and case-insensitive unique email validation.
+- One Bootstrap modal for adding and editing users, with inline required-field, name, length, email-format, and case-insensitive unique email validation.
 - Enable users immediately; confirm before disabling. Stable IDs target the correct record after filtering or pagination.
 - Accessible action labels, keyboard focus restoration, live result counts, and save/status feedback.
 - Responsive navigation and management menu, with horizontal scrolling confined to the table.
@@ -65,6 +65,10 @@ Add and Edit share a form and validation path. IDs and submitted dates are gener
 
 Disabled rows include a text status, long values expose their full content on hover, duplicate email addresses are rejected, and no-results feedback suggests a next step. Destructive-looking disable actions require confirmation. Search, status, and filters remain intact after edits.
 
+Form controls use a single subtle focus ring, filters have more separation, and table headings use a lighter weight. Add/Edit errors appear beside the relevant field after leaving it or attempting to save, then update while correcting it. Failed saves show an accessible summary and focus the first invalid field. Opening another form clears previous errors.
+
+The email address also serves as the username. Validation checks syntax and uniqueness within the current mock data; it does not verify mailbox ownership or deliverability. Names accept international letters, spaces, apostrophes, hyphens, and periods, up to 50 characters.
+
 ## Responsive Design
 
 Desktop preserves the two-column workspace. Below 1200px the top navigation collapses. Below 992px the management menu collapses above the content. On mobile, search and filter controls stack and pagination sits below the result count. The table retains readable columns in its own horizontally scrollable region.
@@ -80,6 +84,8 @@ Desktop preserves the two-column workspace. Below 1200px the top navigation coll
 JavaScript syntax validation and 38 DOM integration checks passed using the actual bundled Bootstrap scripts. Checks covered every search field, combined filters, pagination, add/edit, required and duplicate-email validation, safe text rendering, status confirmation and cancellation, hidden saved records, navigation toggles, and runtime errors.
 
 A subsequent 31-check audit passed after correcting the reference activation dates and reducing table/sidebar spacing. It also verified local dependency files, unique element IDs, all 11 columns, and the first ten records' IDs, first names, and dates against the reference.
+
+The interaction refinement passed 33 DOM checks covering inline errors, international names, malformed and duplicate emails, error reset between modal sessions, valid Add/Edit saves, and search/filter/pagination regressions.
 
 Visual browser verification at desktop, tablet, and mobile widths remains pending: the available browser tool blocked local-file previews. DOM checks do not verify visual layout or native browser behavior.
 

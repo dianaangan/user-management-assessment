@@ -284,11 +284,26 @@
     region: byId("region-filter"),
   };
   const form = byId("user-form");
+  const userFields = [...form.querySelectorAll("[required]")];
+  const touchedFields = new Set();
+  userFields.forEach((field) => {
+    const feedback = document.createElement("div");
+    feedback.id = `${field.id}-error`;
+    feedback.className = "invalid-feedback";
+    field.insertAdjacentElement("afterend", feedback);
+    field.setAttribute(
+      "aria-describedby",
+      [field.getAttribute("aria-describedby"), feedback.id]
+        .filter(Boolean)
+        .join(" "),
+    );
+  });
   const userModal = new bootstrap.Modal(byId("user-modal"));
   const confirmModal = new bootstrap.Modal(byId("confirm-modal"));
   const moduleModal = new bootstrap.Modal(byId("module-modal"));
   let notificationTimer;
   let returnFocus;
+  let userModalReady = false;
 
   function getFilteredUsers() {
     const query = controls.search.value.trim().toLowerCase();
@@ -457,10 +472,13 @@
   }
 
   function openUserModal(user = null) {
+    userModalReady = false;
     returnFocus = document.activeElement;
     state.editingId = user?.id ?? null;
     form.reset();
-    [...form.elements].forEach((field) => field.setCustomValidity?.(""));
+    touchedFields.clear();
+    byId("validation-summary").hidden = true;
+    userFields.forEach((field) => showFieldError(field, ""));
     if (user) {
       for (const key of [
         "firstName",
@@ -482,23 +500,85 @@
     userModal.show();
   }
 
+  function showFieldError(field, message) {
+    field.setCustomValidity(message);
+    field.classList.toggle("is-invalid", Boolean(message));
+    if (message) field.setAttribute("aria-invalid", "true");
+    else field.removeAttribute("aria-invalid");
+    byId(`${field.id}-error`).textContent = message;
+  }
+
+  function getFieldError(field) {
+    const value = field.value.trim();
+    const label = field.labels[0].textContent.trim();
+    if (!value)
+      return `${field.tagName === "SELECT" ? "Select" : "Enter"} ${label.toLowerCase()}.`;
+    if (field.maxLength > 0 && value.length > field.maxLength) {
+      return `Use ${field.maxLength} characters or fewer.`;
+    }
+    if (["firstName", "lastName"].includes(field.name)) {
+      // Support international names, initials, apostrophes and hyphens.
+      if (!/\p{L}/u.test(value) || !/^[\p{L}\p{M}\s.'’\-]+$/u.test(value)) {
+        return "Use letters, spaces, apostrophes, hyphens or periods.";
+      }
+    }
+    if (field.name === "email") {
+      const [local = "", domain = ""] = value.split("@");
+      const domainLabels = domain.split(".");
+      if (
+        field.validity.typeMismatch ||
+        local.length > 64 ||
+        local.startsWith(".") ||
+        local.endsWith(".") ||
+        local.includes("..") ||
+        domainLabels.length < 2 ||
+        domainLabels.some(
+          (part) => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(part),
+        ) ||
+        !/^[a-z]{2,63}$/i.test(domainLabels.at(-1))
+      ) {
+        return "Enter a valid email address, such as name@company.com.";
+      }
+      if (
+        users.some(
+          (user) =>
+            user.id !== state.editingId &&
+            user.email.toLowerCase() === value.toLowerCase(),
+        )
+      ) {
+        return "This email is already used. Enter a different address.";
+      }
+    }
+    return "";
+  }
+
+  function validateField(field) {
+    const message = getFieldError(field);
+    showFieldError(field, message);
+    return !message;
+  }
+
+  function updateValidationSummary() {
+    const count = userFields.filter((field) =>
+      field.classList.contains("is-invalid"),
+    ).length;
+    byId("validation-summary").hidden = count === 0;
+    byId("validation-summary").textContent =
+      `Please check ${count === 1 ? "the highlighted field" : `the ${count} highlighted fields`} before saving.`;
+  }
+
   function validateForm() {
-    for (const name of ["firstName", "lastName", "email"]) {
-      const input = form.elements.namedItem(name);
-      input.value = input.value.trim();
-      input.setCustomValidity(input.value ? "" : "Please enter a value.");
-    }
-    const email = form.elements.namedItem("email");
-    if (
-      users.some(
-        (user) =>
-          user.id !== state.editingId &&
-          user.email.toLowerCase() === email.value.toLowerCase(),
-      )
-    ) {
-      email.setCustomValidity("A user with this email address already exists.");
-    }
-    return form.reportValidity();
+    userFields.forEach((field) => {
+      field.value = field.value.trim();
+      touchedFields.add(field);
+      validateField(field);
+    });
+    updateValidationSummary();
+    const invalid = userFields.find((field) =>
+      field.classList.contains("is-invalid"),
+    );
+    invalid?.focus();
+    return !invalid;
   }
 
   function saveUser(event) {
@@ -610,12 +690,28 @@
     confirmModal.hide();
   });
   form.addEventListener("submit", saveUser);
-  form.addEventListener("input", (event) =>
-    event.target.setCustomValidity?.(""),
-  );
-  byId("user-modal").addEventListener("shown.bs.modal", () =>
-    byId("first-name").focus(),
-  );
+  form.addEventListener("focusout", (event) => {
+    // Opening/closing a dialog can blur the previous field without user input.
+    if (
+      !userModalReady ||
+      !byId("user-modal").classList.contains("show") ||
+      !userFields.includes(event.target)
+    )
+      return;
+    touchedFields.add(event.target);
+    validateField(event.target);
+  });
+  for (const eventName of ["input", "change"]) {
+    form.addEventListener(eventName, (event) => {
+      if (!touchedFields.has(event.target)) return;
+      validateField(event.target);
+      if (!byId("validation-summary").hidden) updateValidationSummary();
+    });
+  }
+  byId("user-modal").addEventListener("shown.bs.modal", () => {
+    byId("first-name").focus();
+    userModalReady = true;
+  });
   byId("user-modal").addEventListener("hidden.bs.modal", restoreFocus);
   byId("confirm-modal").addEventListener("hidden.bs.modal", () => {
     state.pendingDisableId = null;
